@@ -58,7 +58,7 @@ def calculate_data():
         std=1).shift(-1).subtract(1).multiply(100)
 
 
-@app.route('/api/country/<country_name>/')
+@app.route('/country/<country_name>/')
 @cross_origin()
 def country(country_name: str):
     type = request.args.get("type")
@@ -101,7 +101,7 @@ def country(country_name: str):
         }
 
 
-@app.route('/api/countries/')
+@app.route('/countries/')
 @cross_origin()
 def countries():
     return {
@@ -109,7 +109,7 @@ def countries():
     }
 
 
-@app.route('/api/update')
+@app.route('/update')
 @cross_origin()
 def update():
     download()
