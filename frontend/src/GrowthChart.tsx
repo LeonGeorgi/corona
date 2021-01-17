@@ -43,14 +43,14 @@ class GrowthChart extends Component<Props, State> {
         return <svg width={width} height={height}>
           <rect width={width - margin.left - margin.right}
                 height={height - margin.top - margin.bottom}
-                fill={"#ffffff0f"}
+                fill={"var(--chart-background)"}
                 x={margin.left}
                 y={margin.top}/>
           <GridColumns
             top={margin.top}
             scale={timeScale}
             height={height - margin.bottom - margin.top}
-            stroke={"#ffffff"}
+            stroke={"var(--chart-grid-stroke)"}
             strokeOpacity={0.05}
             pointerEvents="none"
           />
@@ -59,7 +59,7 @@ class GrowthChart extends Component<Props, State> {
             scale={valueScale}
             numTicks={5}
             width={width - margin.left - margin.right}
-            stroke={"#ffffff"}
+            stroke={"var(--chart-grid-stroke)"}
             strokeOpacity={0.05}
             pointerEvents="none"
           />
@@ -73,11 +73,11 @@ class GrowthChart extends Component<Props, State> {
             clipBelowTo={valueScale(-100)}
             curve={curveCatmullRom}
             belowAreaProps={{
-              fill: '#b3423b',
+              fill: 'var(--growth-below-area)',
               fillOpacity: 1,
             }}
             aboveAreaProps={{
-              fill: '#489f4c',
+              fill: 'var(--growth-above-area)',
               fillOpacity: 1,
             }}
           />
@@ -87,28 +87,28 @@ class GrowthChart extends Component<Props, State> {
                     x={(d) => timeScale(d.date)}
                     y={(d) => valueScale(d.value)}
                     shapeRendering="geometricPrecision"
-                    stroke={'#ffffff'}
+                    stroke={'var(--text-color)'}
                     strokeWidth={1}
                     strokeOpacity={0.5}/>
 
           <rect width={width - margin.left - margin.right}
                 height={margin.top}
-                fill={"#333333"}
+                fill={"var(--background-color)"}
                 x={margin.left}
                 y={0}/>
           <rect width={width - margin.left - margin.right}
                 height={margin.bottom}
-                fill={"#333333"}
+                fill={"var(--background-color)"}
                 x={margin.left}
                 y={height - margin.bottom}/>
 
           <AxisLeft scale={valueScale}
                     left={this.props.margin.left}
                     numTicks={5}
-                    stroke={"#ffffff00"}
-                    tickStroke={"#ffffff00"}
+                    stroke={"var(--chart-axis-stroke)"}
+                    tickStroke={"var(--chart-axis-tick-stroke)"}
                     tickLabelProps={() => ({
-                      fill: "#ffffffee",
+                      fill: "var(--chart-axis-tick-label)",
                       fontSize: 10,
                       textAnchor: 'end',
                       fontWeight: 300,
@@ -119,10 +119,10 @@ class GrowthChart extends Component<Props, State> {
           <AxisBottom top={height - this.props.margin.bottom}
                       scale={timeScale}
                       numTicks={5}
-                      stroke={"#ffffff00"}
-                      tickStroke={"#ffffff00"}
+                      stroke={"var(--chart-axis-stroke)"}
+                      tickStroke={"#var(--chart-axis-tick-stroke)"}
                       tickLabelProps={() => ({
-                        fill: "#ffffffee",
+                        fill: "var(--chart-axis-tick-label)",
                         fontSize: 10,
                         textAnchor: 'middle',
                         fontWeight: 300,
