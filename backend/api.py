@@ -58,8 +58,6 @@ def calculate_data():
         std=1).shift(-1).subtract(1).multiply(100)
 
 
-
-
 @app.route('/api/country/<country_name>/')
 @cross_origin()
 def country(country_name: str):
@@ -113,6 +111,10 @@ def countries():
 
 @app.route('/api/update')
 @cross_origin()
+def update():
+    download()
+
+
 def download():
     global last_update
     now = datetime.now()
@@ -137,5 +139,5 @@ def download():
 
     last_update = now
     return {'done': now.isoformat()}
-with app.app_context():
-    download()
+
+download()
