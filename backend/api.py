@@ -58,7 +58,6 @@ def calculate_data():
         std=1).shift(-1).subtract(1).multiply(100)
 
 
-calculate_data()
 
 
 @app.route('/api/country/<country_name>/')
@@ -138,3 +137,5 @@ def download():
 
     last_update = now
     return {'done': now.isoformat()}
+
+download()
