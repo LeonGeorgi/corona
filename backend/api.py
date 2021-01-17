@@ -131,10 +131,10 @@ def download():
         "countries_deaths.csv"
     )
 
-    urllib.request.urlretrieve(
-        "https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv",
-        "germany.csv"
-    )
+    #urllib.request.urlretrieve(
+    #    "https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv",
+    #    "germany.csv"
+    #)
     calculate_data()
 
     last_update = now
