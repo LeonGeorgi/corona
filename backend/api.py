@@ -12,6 +12,7 @@ from flask_cors import CORS, cross_origin
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.app_context()
 
 cache: Dict[int, List[Tuple[str, float]]] = dict()
 
