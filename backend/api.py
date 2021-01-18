@@ -2,7 +2,7 @@ import time
 import urllib.request
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 from scipy.stats.mstats import gmean
 from datetime import datetime, timedelta
 
@@ -19,6 +19,8 @@ population_map = {
     "germany": 83_020_000
 }
 df_cases: pd.DataFrame
+available_countries: List[str]
+available_countries_set: Set[str]
 last_update: datetime = None
 
 
@@ -36,6 +38,10 @@ def calculate_data():
     global df_cases
     df_cases = convert(pd.read_csv("countries_cases.csv"))
     df_deaths = convert(pd.read_csv("countries_deaths.csv"))
+
+    global available_countries, available_countries_set
+    available_countries = list(df_cases.columns.values)
+    available_countries_set = set(available_countries)
 
     def daily_change(df: pd.DataFrame):
         return df - df.shift(1)
@@ -57,54 +63,71 @@ def calculate_data():
         std=1).shift(-1).subtract(1).multiply(100)
 
 
+def format_date(date: datetime):
+    return date.strftime('%Y-%m-%d')
+
+
+def convert_to_result(series: pd.Series):
+    return {
+        "r": [
+            {
+                "d": format_date(date),
+                "v": round(value, 1) if not np.isnan(value) else None
+            } for date, value in series.iteritems()
+        ]
+    }
+
+def error(error_message: str):
+    return {
+        "r": None,
+        "e": error_message
+    }
+
+def country_not_available(country_name: str):
+    return error(f'No data available for country "{country_name}"')
+
+
+def no_type():
+    return error("No type specified")
+
+
+def illegal_type(type: str):
+    return error(f'Illegal type "{type}"')
+
+
 @app.route('/country/<country_name>/')
 @cross_origin()
 def country(country_name: str):
+
+    if country_name not in available_countries_set:
+        return country_not_available(country_name)
+
     type = request.args.get("type")
     if type is None:
-        return {
-            "country": country_name,
-        }
+        return no_type()
 
-    result = []
+
+    series: pd.Series
     if type == "cases":
-        return {
-            "result": [{
-                "date": date.isoformat(),
-                "value": value if not np.isnan(value) else None
-            } for date, value in df_new_cases[country_name].iteritems()]
-        }
+        series = df_new_cases[country_name]
     elif type == "deaths":
-        return {
-            "result": [{
-                "date": date.isoformat(),
-                "value": value if not np.isnan(value) else None
-            } for date, value in df_new_deaths[country_name].iteritems()]
-        }
+        series = df_new_deaths[country_name]
     elif type == "growth":
-        return {
-            "result": [{
-                "date": date.isoformat(),
-                "value": value if not np.isnan(value) else None
-            } for date, value in
-                df_growth[country_name].iteritems()]
-        }
+        series =df_growth[country_name]
     elif type == "inzidenz":
         df_inzidenz = (df_cases - df_cases.shift(7)) / population_map[country_name] * 100_000
-        return {
-            "result": [{
-                "date": date.isoformat(),
-                "value": value if not np.isnan(value) else None
-            } for date, value in
-                df_inzidenz[country_name].iteritems()]
-        }
+        series = df_inzidenz[country_name]
+    else:
+        return illegal_type(type)
+
+    return convert_to_result(series)
 
 
 @app.route('/countries/')
 @cross_origin()
 def countries():
     return {
-        'countries': list(df_cases.columns.values)
+        'countries': available_countries
     }
 
 
@@ -130,13 +153,14 @@ def download():
         "countries_deaths.csv"
     )
 
-    #urllib.request.urlretrieve(
+    # urllib.request.urlretrieve(
     #    "https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv",
     #    "germany.csv"
-    #)
+    # )
     calculate_data()
 
     last_update = now
     return {'done': now.isoformat()}
+
 
 download()

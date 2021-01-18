@@ -9,7 +9,7 @@ enum GraphType {
   CASES = 'cases', DEATHS = 'deaths', GROWTH = 'growth'
 }
 
-type DataEntry = { date: Date, value: number }
+type DataEntry = { date: Date, value: number | null }
 
 type State = {
   data: DataEntry[],
@@ -68,7 +68,8 @@ class App extends React.Component<{}, State> {
       res => {
         return res.json();
       }).then(response => {
-      const data = response.result
+      const result: { d: string, v: number | null }[] = response.r
+      const data = result.map(({ d: date, v: value }) => ({ date: new Date(date), value }))
       this.cache.set(this.computeKey(country, type), { data, date: Date.now() })
       this.updateDataInState(data, country, type)
     })
@@ -77,7 +78,7 @@ class App extends React.Component<{}, State> {
   updateDataInState(data: DataEntry[], country: string, type: GraphType) {
     this.setState({
       data: data.map(({ date, value }) => ({
-        date: new Date(date),
+        date: date,
         value: value
       })),
       loading: false,
@@ -128,16 +129,16 @@ class App extends React.Component<{}, State> {
                 {this.state.data.length > 1 ?
                   (this.state.activeType !== GraphType.GROWTH ?
                     (this.state.activeType === GraphType.CASES ?
-                      <LineChart data={this.state.data.filter(({ value }) => value !== null)}
+                      <LineChart data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number}[]}
                                  margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
                                  areaColor={"var(--cases-area-color)"}
                                  lineColor={'var(--cases-line-color)'}
-                      /> : <LineChart data={this.state.data.filter(({ value }) => value !== null)}
+                      /> : <LineChart data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number}[]}
                                       margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
                                       areaColor={"var(--death-area-color)"}
                                       lineColor={'var(--death-line-color)'}
                       />)
-                    : <GrowthChart data={this.state.data.filter(({ value }) => value !== null)}
+                    : <GrowthChart data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number}[]}
                                    margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
                     />) : null}
               </div>
