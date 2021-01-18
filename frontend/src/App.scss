@@ -185,6 +185,8 @@ main {
   align-items: center;
   font-size: 0.8rem;
   color: var(--log-scale-text-color);
+  user-select: none;
+  
   > input {
     appearance: none;
     border-radius: 100%;
