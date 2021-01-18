@@ -1,5 +1,5 @@
 FROM python:3.8
-COPY ./requirements.txt /app/requirements.txt
-WORKDIR /app
+WORKDIR /app/backend
+COPY requirements.txt ./
 RUN pip install -r requirements.txt
-COPY . /app
+COPY . ./

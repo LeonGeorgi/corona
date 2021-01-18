@@ -10,7 +10,6 @@ services:
       - 3000:3000
     expose:
       - 8080
-    command: npm start
   backend:
     container_name: corona-backend
     restart: always

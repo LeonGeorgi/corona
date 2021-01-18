@@ -3,6 +3,7 @@ import './App.scss';
 import { BrowserRouter as Router } from "react-router-dom";
 import LineChart from './LineChart';
 import GrowthChart from './GrowthChart';
+import { config } from './Constants';
 
 enum GraphType {
   CASES = 'cases', DEATHS = 'deaths', GROWTH = 'growth'
@@ -31,8 +32,9 @@ class App extends React.Component<{}, State> {
   }
 
   componentDidMount() {
+    console.log(`API: ${config.apiUrl}`)
     this.setTypeAndCountryAndDownload(this.state.currentCountry, this.state.selectedType)
-    fetch(`/api/countries/`).then(
+    fetch(`${config.apiUrl}/countries/`).then(
       res => {
         return res.json();
       }).then(response => {
@@ -42,7 +44,7 @@ class App extends React.Component<{}, State> {
 
   setTypeAndCountryAndDownload = (country: string, type: GraphType) => {
     this.setState({ loading: true, currentCountry: country, selectedType: type })
-    fetch(`/api/country/${country}/?type=${type.valueOf()}`).then(
+    fetch(`${config.apiUrl}/country/${country}/?type=${type.valueOf()}`).then(
       res => {
         return res.json();
       }).then(response => {
