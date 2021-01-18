@@ -9,6 +9,10 @@ enum GraphType {
   CASES = 'cases', DEATHS = 'deaths', GROWTH = 'growth'
 }
 
+enum ThemeMode {
+  AUTO = 'auto', DARK = 'dark', LIGHT = 'light'
+}
+
 type DataEntry = { date: Date, value: number | null }
 
 type State = {
@@ -18,7 +22,8 @@ type State = {
   selectedType: GraphType,
   countries: string[],
   currentCountry: string,
-  logScale: boolean
+  logScale: boolean,
+  themeMode: ThemeMode
 }
 
 class App extends React.Component<{}, State> {
@@ -28,6 +33,9 @@ class App extends React.Component<{}, State> {
 
   constructor(props: {}) {
     super(props);
+
+    const themeMode = (localStorage.getItem("theme-mode") || 'auto') as ThemeMode
+
     this.state = {
       data: [],
       loading: false,
@@ -35,12 +43,19 @@ class App extends React.Component<{}, State> {
       selectedType: GraphType.CASES,
       countries: ['Germany'],
       currentCountry: 'Germany',
-      logScale: false
+      logScale: false,
+      themeMode
     }
   }
 
   computeKey(country: string, type: GraphType) {
     return `${country},${type.valueOf()}`
+  }
+
+  updateTheme() {
+    document.body.classList.toggle("dark-theme", this.state.themeMode === ThemeMode.DARK)
+    document.body.classList.toggle("light-theme", this.state.themeMode === ThemeMode.LIGHT)
+    localStorage.setItem("theme-mode", this.state.themeMode)
   }
 
   componentDidMount() {
@@ -51,6 +66,11 @@ class App extends React.Component<{}, State> {
       }).then(response => {
       this.setState({ countries: response.countries })
     })
+    this.updateTheme()
+  }
+
+  componentDidUpdate() {
+    this.updateTheme()
   }
 
   updateCountryAndType = (country: string, type: GraphType) => {
@@ -99,6 +119,18 @@ class App extends React.Component<{}, State> {
 
   handleLogScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ logScale: event.currentTarget.checked })
+  }
+
+  handleThemeModeAutoChange = (_: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ themeMode: ThemeMode.AUTO })
+  }
+
+  handleThemeModeDarkChange = (_: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ themeMode: ThemeMode.DARK })
+  }
+
+  handleThemeModeLightChange = (_: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ themeMode: ThemeMode.LIGHT })
   }
 
   render() {
@@ -161,6 +193,23 @@ class App extends React.Component<{}, State> {
                 <label htmlFor="log-scale">
                   Log scale
                 </label>
+              </div>
+              <div className="theme-wrapper">
+                <div className="checkbox-wrapper">
+                  <input type="checkbox" id="theme-auto" checked={this.state.themeMode === ThemeMode.AUTO}
+                        onChange={this.handleThemeModeAutoChange}/>
+                  <label htmlFor="theme-auto">Auto</label>
+                </div>
+                <div className="checkbox-wrapper">
+                  <input type="checkbox" id="theme-dark" checked={this.state.themeMode === ThemeMode.DARK}
+                        onChange={this.handleThemeModeDarkChange}/>
+                  <label htmlFor="theme-dark">Dark</label>
+                </div>
+                <div className="checkbox-wrapper">
+                  <input type="checkbox" id="theme-light" checked={this.state.themeMode === ThemeMode.LIGHT}
+                        onChange={this.handleThemeModeLightChange}/>
+                  <label htmlFor="theme-light">Light</label>
+                </div>
               </div>
             </div>
           </main>
