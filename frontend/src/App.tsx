@@ -17,7 +17,8 @@ type State = {
   activeType: GraphType
   selectedType: GraphType,
   countries: string[],
-  currentCountry: string
+  currentCountry: string,
+  logScale: boolean
 }
 
 class App extends React.Component<{}, State> {
@@ -33,7 +34,8 @@ class App extends React.Component<{}, State> {
       activeType: GraphType.CASES,
       selectedType: GraphType.CASES,
       countries: ['Germany'],
-      currentCountry: 'Germany'
+      currentCountry: 'Germany',
+      logScale: false
     }
   }
 
@@ -95,6 +97,10 @@ class App extends React.Component<{}, State> {
     this.updateCountryAndType(country, this.state.selectedType)
   }
 
+  handleLogScaleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ logScale: event.currentTarget.checked })
+  }
+
   render() {
     return (
       <Router>
@@ -129,18 +135,32 @@ class App extends React.Component<{}, State> {
                 {this.state.data.length > 1 ?
                   (this.state.activeType !== GraphType.GROWTH ?
                     (this.state.activeType === GraphType.CASES ?
-                      <LineChart data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number}[]}
-                                 margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
-                                 areaColor={"var(--cases-area-color)"}
-                                 lineColor={'var(--cases-line-color)'}
-                      /> : <LineChart data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number}[]}
-                                      margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
-                                      areaColor={"var(--death-area-color)"}
-                                      lineColor={'var(--death-line-color)'}
+                      <LineChart
+                        data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
+                        margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
+                        areaColor={"var(--cases-area-color)"}
+                        lineColor={'var(--cases-line-color)'}
+                        logScale={this.state.logScale}
+                      /> : <LineChart
+                        data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
+                        margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
+                        areaColor={"var(--death-area-color)"}
+                        lineColor={'var(--death-line-color)'}
+                        logScale={this.state.logScale}
                       />)
-                    : <GrowthChart data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number}[]}
-                                   margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
+                    : <GrowthChart
+                      data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
+                      margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
                     />) : null}
+              </div>
+            </div>
+            <div className="bottom-controls">
+              <div className="checkbox-wrapper">
+                <input type="checkbox" id="log-scale" checked={this.state.logScale}
+                       onChange={this.handleLogScaleChange}/>
+                <label htmlFor="log-scale">
+                  Log scale
+                </label>
               </div>
             </div>
           </main>

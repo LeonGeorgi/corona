@@ -3,14 +3,15 @@ import { AxisBottom, AxisLeft } from '@visx/axis';
 import { GridColumns, GridRows } from '@visx/grid';
 import { AreaClosed, LinePath } from '@visx/shape';
 import { curveCatmullRom } from '@visx/curve';
-import { scaleLinear, scaleTime } from '@visx/scale';
-import { ParentSize } from '@visx/responsive';
+import { scaleLinear, scaleTime, scaleLog } from '@visx/scale';
+import { AutoSizer } from 'react-virtualized'
 
 type Props = {
   data: { date: Date, value: number }[],
   margin: { left: number, right: number, top: number, bottom: number },
   areaColor: string,
-  lineColor: string
+  lineColor: string,
+  logScale: boolean
 }
 type State = {}
 
@@ -36,16 +37,26 @@ class LineChart extends Component<Props, State> {
         min = value
       }
     }
+    if (this.props.logScale) {
+      return scaleLog<number>({
+        range: [height - this.props.margin.bottom, this.props.margin.top],
+        domain: [1, max],
+        nice: true,
+        base: 10,
+        clamp: true
+      })
+    }
     return scaleLinear<number>({
       range: [height - this.props.margin.bottom, this.props.margin.top],
-      domain: [0, max],
-      nice: true
+      domain: [1, max],
+      nice: true,
+      clamp: true
     })
   }
 
   render() {
     const margin = this.props.margin
-    return <ParentSize>
+    return <AutoSizer>
       {({ height, width }) => {
         const timeScale = this.getTimeScale(width);
         const valueScale = this.getValueScale(height)
@@ -68,7 +79,8 @@ class LineChart extends Component<Props, State> {
                       fontFamily: '"Roboto Mono", sans-serif',
                       dx: '0.0em',
                       dy: '0.33em',
-                    })}/>
+                    })}
+                    tickFormat={(value => value.toLocaleString())}/>
           <AxisBottom top={height - this.props.margin.bottom}
                       scale={timeScale}
                       numTicks={5}
@@ -103,7 +115,9 @@ class LineChart extends Component<Props, State> {
           <AreaClosed data={this.props.data}
                       curve={curveCatmullRom}
                       x={(d) => timeScale(d.date)}
-                      y={(d) => valueScale(d.value)}
+                      y={(d) => {
+                        return valueScale(d.value);
+                      }}
                       shapeRendering="geometricPrecision"
                       fill={this.props.areaColor}
                       yScale={valueScale}/>
@@ -118,7 +132,7 @@ class LineChart extends Component<Props, State> {
                     strokeOpacity={0.8}/>
         </svg>;
       }}
-    </ParentSize>;
+    </AutoSizer>;
   }
 }
 

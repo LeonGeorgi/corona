@@ -18,6 +18,8 @@
 
   --growth-below-area: #b3423b;
   --growth-above-area: #489f4c;
+
+  --log-scale-text-color: #ffffffee
 }
 
 body, html {
@@ -38,8 +40,11 @@ body, html {
 
 
 main {
+  display: flex;
+  flex-flow: column nowrap;
   height: 100vh;
   padding: 3rem 5rem 3rem 5rem;
+  overflow: no-content;
 }
 
 .country-select-wrapper {
@@ -116,20 +121,45 @@ main {
 }
 
 .chart-wrapper {
-  height: 100%;
+
+  flex-shrink: 1;
+  flex-grow: 1;
+  flex-basis: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   padding-top: 2rem;
   margin-right: -30px;
   margin-left: -50px;
-  padding-bottom: 30px;
+  padding-bottom: calc(2rem - 20px);
 
 }
 
 .chart {
   height: 100%;
   width: 100%;
+}
+
+
+.checkbox-wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--log-scale-text-color);
+  > input {
+    appearance: none;
+    //background: white;
+    border-radius: 100%;
+    border: 1px solid white;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -1.5rem;
+    margin-right: 0.5rem;
+    &:checked {
+      background: white;
+    }
+  }
 }
 
 
@@ -162,19 +192,23 @@ main {
   }
 
   .chart-wrapper {
+    max-height: 450px;
     padding-top: 0;
     align-items: flex-start;
     margin-right: calc(0.5rem - 30px);
     margin-left: 0;
+    padding-bottom: 0;
 
   }
-  .chart {
-    max-height: 450px;
+  .checkbox-wrapper {
+    > input {
+      margin-left: calc(50px - 2em);
+    }
   }
 }
 @media only screen and (max-width: 400px) {
 
-  .chart {
+  .chart-wrapper {
     max-height: 300px;
   }
 }

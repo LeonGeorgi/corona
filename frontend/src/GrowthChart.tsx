@@ -4,8 +4,8 @@ import { GridColumns, GridRows } from '@visx/grid';
 import { LinePath } from '@visx/shape';
 import { curveCatmullRom } from '@visx/curve';
 import { scaleLinear, scaleTime } from '@visx/scale';
-import { ParentSize } from '@visx/responsive';
 import { Threshold } from '@visx/threshold';
+import { AutoSizer } from 'react-virtualized';
 
 type Props = {
   data: { date: Date, value: number }[],
@@ -36,7 +36,7 @@ class GrowthChart extends Component<Props, State> {
 
   render() {
     const margin = this.props.margin
-    return <ParentSize>
+    return <AutoSizer>
       {({ height, width }) => {
         const timeScale = this.getTimeScale(width);
         const valueScale = this.getValueScale(height)
@@ -131,7 +131,7 @@ class GrowthChart extends Component<Props, State> {
                       })}/>
         </svg>;
       }}
-    </ParentSize>;
+    </AutoSizer>;
   }
 }
 
