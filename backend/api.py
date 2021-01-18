@@ -77,11 +77,13 @@ def convert_to_result(series: pd.Series):
         ]
     }
 
+
 def error(error_message: str):
     return {
         "r": None,
         "e": error_message
     }
+
 
 def country_not_available(country_name: str):
     return error(f'No data available for country "{country_name}"')
@@ -98,7 +100,6 @@ def illegal_type(type: str):
 @app.route('/country/<country_name>/')
 @cross_origin()
 def country(country_name: str):
-
     if country_name not in available_countries_set:
         return country_not_available(country_name)
 
@@ -106,14 +107,13 @@ def country(country_name: str):
     if type is None:
         return no_type()
 
-
     series: pd.Series
     if type == "cases":
         series = df_new_cases[country_name]
     elif type == "deaths":
         series = df_new_deaths[country_name]
     elif type == "growth":
-        series =df_growth[country_name]
+        series = df_growth[country_name]
     elif type == "inzidenz":
         df_inzidenz = (df_cases - df_cases.shift(7)) / population_map[country_name] * 100_000
         series = df_inzidenz[country_name]
@@ -134,14 +134,15 @@ def countries():
 @app.route('/update')
 @cross_origin()
 def update():
-    download()
+    update_time = download()
+    return {'updateTime': update_time.isoformat()}
 
 
 def download():
     global last_update
     now = datetime.now()
     if last_update is not None and (now - last_update) < timedelta(hours=3):
-        return
+        return last_update
     print("Downloading new data")
     urllib.request.urlretrieve(
         "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
@@ -160,7 +161,7 @@ def download():
     calculate_data()
 
     last_update = now
-    return {'done': now.isoformat()}
+    return now
 
 
 download()
