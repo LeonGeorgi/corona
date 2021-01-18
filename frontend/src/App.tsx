@@ -106,12 +106,12 @@ class App extends React.Component<{}, State> {
                     (this.state.activeType === GraphType.CASES ?
                       <LineChart data={this.state.data.filter(({ value }) => value !== null)}
                                  margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
-                                 areaColor={"#48a59c"}
-                                 lineColor={'#E0F2F1'}
+                                 areaColor={"var(--cases-area-color)"}
+                                 lineColor={'var(--cases-line-color)'}
                       /> : <LineChart data={this.state.data.filter(({ value }) => value !== null)}
                                       margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
-                                      areaColor={"#b3423b"}
-                                      lineColor={'#FFEBEE'}
+                                      areaColor={"var(--death-area-color)"}
+                                      lineColor={'var(--death-line-color)'}
                       />)
                     : <GrowthChart data={this.state.data.filter(({ value }) => value !== null)}
                                    margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
