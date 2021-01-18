@@ -11,6 +11,8 @@ python-dotenv = "*"
 flask-cors = "*"
 pandas = "*"
 scipy = "*"
+wheel = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"

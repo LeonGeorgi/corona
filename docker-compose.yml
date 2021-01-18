@@ -3,6 +3,7 @@ version: '3.8'
 services:
   frontend:
     container_name: corona-frontend
+    restart: always
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -13,8 +14,9 @@ services:
   backend:
     container_name: corona-backend
     restart: always
-    build: ./backend
-    command: python main.py run -h 0.0.0.0
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - 5000:5000
     expose:
