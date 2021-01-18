@@ -42,7 +42,6 @@ class App extends React.Component<{}, State> {
   }
 
   componentDidMount() {
-    console.log(`API: ${config.apiUrl}`)
     this.updateCountryAndType(this.state.currentCountry, this.state.selectedType)
     fetch(`${config.apiUrl}/countries/`).then(
       res => {
@@ -57,7 +56,6 @@ class App extends React.Component<{}, State> {
     const key = this.computeKey(country, type)
     if (!this.cache.has(key) ||
       Date.now() - this.cache.get(key)!.date > this.CACHE_THRESHOLD) {
-      console.log(this.cache)
       this.downloadData(country, type)
     } else {
       const { data } = this.cache.get(key)!

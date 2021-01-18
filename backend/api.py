@@ -25,7 +25,6 @@ last_update: datetime = None
 def calculate_data():
     def convert(df: pd.DataFrame):
         df = df[df["Province/State"].isna()]
-        print(df)
         df = df.T
         df = df.drop(["Province/State", "Lat", "Long"], 0)
         df.columns = df.iloc[0]
