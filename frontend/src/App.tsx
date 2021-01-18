@@ -9,8 +9,10 @@ enum GraphType {
   CASES = 'cases', DEATHS = 'deaths', GROWTH = 'growth'
 }
 
+type DataEntry = { date: Date, value: number }
+
 type State = {
-  data: { date: Date, value: number }[],
+  data: DataEntry[],
   loading: boolean,
   activeType: GraphType
   selectedType: GraphType,
@@ -19,6 +21,10 @@ type State = {
 }
 
 class App extends React.Component<{}, State> {
+
+  cache = new Map<string, { data: DataEntry[], date: number }>()
+  CACHE_THRESHOLD = 600_000
+
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -31,9 +37,13 @@ class App extends React.Component<{}, State> {
     }
   }
 
+  computeKey(country: string, type: GraphType) {
+    return `${country},${type.valueOf()}`
+  }
+
   componentDidMount() {
     console.log(`API: ${config.apiUrl}`)
-    this.setTypeAndCountryAndDownload(this.state.currentCountry, this.state.selectedType)
+    this.updateCountryAndType(this.state.currentCountry, this.state.selectedType)
     fetch(`${config.apiUrl}/countries/`).then(
       res => {
         return res.json();
@@ -42,21 +52,35 @@ class App extends React.Component<{}, State> {
     })
   }
 
-  setTypeAndCountryAndDownload = (country: string, type: GraphType) => {
+  updateCountryAndType = (country: string, type: GraphType) => {
     this.setState({ loading: true, currentCountry: country, selectedType: type })
+    const key = this.computeKey(country, type)
+    if (!this.cache.has(key) ||
+      Date.now() - this.cache.get(key)!.date > this.CACHE_THRESHOLD) {
+      console.log(this.cache)
+      this.downloadData(country, type)
+    } else {
+      const { data } = this.cache.get(key)!
+      this.updateDataInState(data, country, type)
+    }
+  }
+
+  downloadData = (country: string, type: GraphType) => {
     fetch(`${config.apiUrl}/country/${country}/?type=${type.valueOf()}`).then(
       res => {
         return res.json();
       }).then(response => {
-      this.onDataLoaded(response.result, type)
+      const data = response.result
+      this.cache.set(this.computeKey(country, type), { data, date: Date.now() })
+      this.updateDataInState(data, country, type)
     })
   }
 
-  onDataLoaded(data: { date: string, value: number }[], type: GraphType) {
+  updateDataInState(data: DataEntry[], country: string, type: GraphType) {
     this.setState({
-      data: data.map((entry: { date: string, value: number }) => ({
-        date: new Date(entry.date),
-        value: entry.value
+      data: data.map(({ date, value }) => ({
+        date: new Date(date),
+        value: value
       })),
       loading: false,
       activeType: type
@@ -64,12 +88,12 @@ class App extends React.Component<{}, State> {
   }
 
   handleTypeChange = (type: GraphType) => {
-    this.setTypeAndCountryAndDownload(this.state.currentCountry, type)
+    this.updateCountryAndType(this.state.currentCountry, type)
   }
 
   handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const country = event.currentTarget.value
-    this.setTypeAndCountryAndDownload(country, this.state.selectedType)
+    this.updateCountryAndType(country, this.state.selectedType)
   }
 
   render() {
