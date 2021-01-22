@@ -23,25 +23,25 @@
 }
 
 @mixin light-theme {
-  --background-color: #f9f9f9;
-  --text-color: #333333;
+  --background-color: #ffffff;
+  --text-color: #000000cc;
 
-  --chart-background: #33333309;
-  --chart-grid-stroke: #333333;
-  --chart-axis-stroke: #33333300;
-  --chart-axis-tick-stroke: #33333300;
-  --chart-axis-tick-label: #333333ee;
+  --chart-background: #0000000f;
+  --chart-grid-stroke: #000000;
+  --chart-axis-stroke: #00000000;
+  --chart-axis-tick-stroke: #00000000;
+  --chart-axis-tick-label: #000000ee;
 
-  --cases-area-color: #48a59c;
+  --cases-area-color: #53b7ad;
   --cases-line-color: #1a3b38;
 
-  --death-area-color: #b3423b;
+  --death-area-color: #c8544d;
   --death-line-color: #381512;
 
-  --growth-below-area: #b3423b;
-  --growth-above-area: #489f4c;
+  --growth-below-area: #d0615a;
+  --growth-above-area: #71b373;
 
-  --log-scale-text-color: #333333ee;
+  --log-scale-text-color: #000000ee;
 }
 
 body {
