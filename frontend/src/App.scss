@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
 
-:root {
+@mixin dark-theme {
   --background-color: #333333;
   --text-color: #ffffff;
 
@@ -22,6 +22,44 @@
   --log-scale-text-color: #ffffffee
 }
 
+@mixin light-theme {
+  --background-color: #ffffff;
+  --text-color: #000000cc;
+
+  --chart-background: #0000000f;
+  --chart-grid-stroke: #000000;
+  --chart-axis-stroke: #00000000;
+  --chart-axis-tick-stroke: #00000000;
+  --chart-axis-tick-label: #000000ee;
+
+  --cases-area-color: #53b7ad;
+  --cases-line-color: #1a3b38;
+
+  --death-area-color: #c8544d;
+  --death-line-color: #381512;
+
+  --growth-below-area: #d0615a;
+  --growth-above-area: #71b373;
+
+  --log-scale-text-color: #000000ee;
+}
+
+body {
+  @include dark-theme();
+}
+body.light-theme {
+  @include light-theme();
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    @include light-theme();
+  }
+  body.dark-theme {
+    @include dark-theme();
+  }
+}
+
 body, html {
   margin: 0;
   padding: 0;
@@ -38,7 +76,6 @@ body, html {
   fill: var(--text-color);
 }
 
-
 main {
   display: flex;
   flex-flow: column nowrap;
@@ -48,7 +85,6 @@ main {
 }
 
 .country-select-wrapper {
-
   margin-left: -2.3rem;
   flex-shrink: 1;
   flex-grow: 1;
@@ -121,7 +157,6 @@ main {
 }
 
 .chart-wrapper {
-
   flex-shrink: 1;
   flex-grow: 1;
   flex-basis: 0;
@@ -132,7 +167,6 @@ main {
   margin-right: -30px;
   margin-left: -50px;
   padding-bottom: calc(2rem - 20px);
-
 }
 
 .chart {
@@ -140,6 +174,10 @@ main {
   width: 100%;
 }
 
+.bottom-controls {
+  display: flex;
+  justify-content: space-between;
+}
 
 .checkbox-wrapper {
   display: flex;
@@ -147,21 +185,29 @@ main {
   align-items: center;
   font-size: 0.8rem;
   color: var(--log-scale-text-color);
+  user-select: none;
+  
   > input {
     appearance: none;
-    //background: white;
     border-radius: 100%;
-    border: 1px solid white;
+    border: 1px solid var(--text-color);
     width: 1rem;
     height: 1rem;
     margin-left: -1.5rem;
     margin-right: 0.5rem;
     &:checked {
-      background: white;
+      background: var(--text-color);
     }
   }
 }
 
+.theme-wrapper {
+  display: flex;
+
+  .checkbox-wrapper {
+    margin-left: 2rem;
+  }
+}
 
 @media only screen and (max-width: 600px) {
   main {
@@ -172,7 +218,6 @@ main {
   .country-select-wrapper {
     margin-right: 0;
   }
-
 
   .controls {
     display: flex;
@@ -198,16 +243,25 @@ main {
     margin-right: calc(0.5rem - 30px);
     margin-left: 0;
     padding-bottom: 0;
-
   }
+
+  .bottom-controls {
+    flex-direction: column;
+    justify-content: start;
+  }
+
   .checkbox-wrapper {
     > input {
       margin-left: calc(50px - 2em);
     }
   }
-}
-@media only screen and (max-width: 400px) {
 
+  .theme-wrapper .checkbox-wrapper {
+    margin-left: initial
+  }
+}
+
+@media only screen and (max-width: 400px) {
   .chart-wrapper {
     max-height: 300px;
   }
