@@ -38,9 +38,16 @@ class LineChart extends Component<Props, State> {
       }
     }
     if (this.props.logScale) {
+      const sorted = this.props.data.map(({ value }) => value).sort((a, b) => a - b)
+      const percentile = 10
+      const percentileIndex = Math.round((sorted.length - 1) / 100 * percentile)
+      let lowerBound = sorted[percentileIndex]
+      if (lowerBound < 1) {
+        lowerBound = 1
+      }
       return scaleLog<number>({
         range: [height - this.props.margin.bottom, this.props.margin.top],
-        domain: [1, max],
+        domain: [lowerBound, max],
         nice: true,
         base: 10,
         clamp: true
