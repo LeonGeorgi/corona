@@ -77,10 +77,14 @@ body, html {
 }
 
 main {
+  padding: 0 5rem;
+}
+
+.graph-content {
   display: flex;
   flex-flow: column nowrap;
   height: 100vh;
-  padding: 3rem 5rem 3rem 5rem;
+  padding: 3rem 0;
   overflow: no-content;
 }
 
@@ -209,10 +213,17 @@ main {
   }
 }
 
+.explanation {
+  padding-bottom: 3rem;
+}
+
 @media only screen and (max-width: 600px) {
   main {
+    padding: 0 0.5rem;
+  }
+  .graph-content {
     height: 100vh;
-    padding: 1.5rem 0.5rem 1rem 0.5rem;
+    padding: 1.5rem 0 1rem 0;
 
   }
   .country-select-wrapper {

@@ -138,81 +138,94 @@ class App extends React.Component<{}, State> {
       <Router>
         <div className="App">
           <main>
-            <div className="controls">
-              <div className="country-select-wrapper">
-                <select className="country-select"
-                        onChange={this.handleCountryChange}
-                        value={this.state.currentCountry}>
-                  {this.state.countries.map((country, index) => <option key={`${index}-${country}`}
-                                                                        value={country}>{country}</option>)}
-                </select>
+            <div className="graph-content">
+              <div className="controls">
+                <div className="country-select-wrapper">
+                  <select className="country-select"
+                          onChange={this.handleCountryChange}
+                          value={this.state.currentCountry}>
+                    {this.state.countries.map((country, index) => <option
+                      key={`${index}-${country}`}
+                      value={country}>{country}</option>)}
+                  </select>
+                </div>
+                <div className="type-buttons">
+                  <button onClick={() => this.handleTypeChange(GraphType.CASES)}
+                          className={this.state.selectedType === GraphType.CASES ? "active" : undefined}>
+                    Infections
+                  </button>
+                  <button onClick={() => this.handleTypeChange(GraphType.DEATHS)}
+                          className={this.state.selectedType === GraphType.DEATHS ? "active" : undefined}>
+                    Deaths
+                  </button>
+                  <button onClick={() => this.handleTypeChange(GraphType.GROWTH)}
+                          className={this.state.selectedType === GraphType.GROWTH ? "active" : undefined}>
+                    Growth
+                  </button>
+                </div>
               </div>
-              <div className="type-buttons">
-                <button onClick={() => this.handleTypeChange(GraphType.CASES)}
-                        className={this.state.selectedType === GraphType.CASES ? "active" : undefined}>
-                  Cases
-                </button>
-                <button onClick={() => this.handleTypeChange(GraphType.DEATHS)}
-                        className={this.state.selectedType === GraphType.DEATHS ? "active" : undefined}>
-                  Deaths
-                </button>
-                <button onClick={() => this.handleTypeChange(GraphType.GROWTH)}
-                        className={this.state.selectedType === GraphType.GROWTH ? "active" : undefined}>
-                  Growth
-                </button>
-              </div>
-            </div>
-            <div className="chart-wrapper">
-              <div className="chart">
-                {this.state.data.length > 1 ?
-                  (this.state.activeType !== GraphType.GROWTH ?
-                    (this.state.activeType === GraphType.CASES ?
-                      <LineChart
+              <div className="chart-wrapper">
+                <div className="chart">
+                  {this.state.data.length > 1 ?
+                    (this.state.activeType !== GraphType.GROWTH ?
+                      (this.state.activeType === GraphType.CASES ?
+                        <LineChart
+                          data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
+                          margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
+                          areaColor={"var(--cases-area-color)"}
+                          lineColor={'var(--cases-line-color)'}
+                          logScale={this.state.logScale}
+                        /> : <LineChart
+                          data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
+                          margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
+                          areaColor={"var(--death-area-color)"}
+                          lineColor={'var(--death-line-color)'}
+                          logScale={this.state.logScale}
+                        />)
+                      : <GrowthChart
                         data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
                         margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
-                        areaColor={"var(--cases-area-color)"}
-                        lineColor={'var(--cases-line-color)'}
-                        logScale={this.state.logScale}
-                      /> : <LineChart
-                        data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
-                        margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
-                        areaColor={"var(--death-area-color)"}
-                        lineColor={'var(--death-line-color)'}
-                        logScale={this.state.logScale}
-                      />)
-                    : <GrowthChart
-                      data={this.state.data.filter(({ value }) => value !== null) as { date: Date, value: number }[]}
-                      margin={{ top: 20, left: 50, right: 30, bottom: 30 }}
-                    />) : null}
+                      />) : null}
+                </div>
+              </div>
+              <div className="bottom-controls">
+                {this.state.selectedType !== GraphType.GROWTH ?
+                  <div className="checkbox-wrapper">
+                    <input type="checkbox" id="log-scale" checked={this.state.logScale}
+                           onChange={this.handleLogScaleChange}/>
+                    <label htmlFor="log-scale">
+                      Log scale
+                    </label>
+                  </div> : <div/>
+                }
+                <div className="theme-wrapper">
+                  <div className="checkbox-wrapper">
+                    <input type="checkbox" id="theme-auto" checked={this.state.theme === Theme.AUTO}
+                           onChange={this.handleThemeAutoChange}/>
+                    <label htmlFor="theme-auto">Auto</label>
+                  </div>
+                  <div className="checkbox-wrapper">
+                    <input type="checkbox" id="theme-dark" checked={this.state.theme === Theme.DARK}
+                           onChange={this.handleThemeDarkChange}/>
+                    <label htmlFor="theme-dark">Dark</label>
+                  </div>
+                  <div className="checkbox-wrapper">
+                    <input type="checkbox" id="theme-light"
+                           checked={this.state.theme === Theme.LIGHT}
+                           onChange={this.handleThemeLightChange}/>
+                    <label htmlFor="theme-light">Light</label>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="bottom-controls">
-              {this.state.selectedType !== GraphType.GROWTH ?
-                <div className="checkbox-wrapper">
-                  <input type="checkbox" id="log-scale" checked={this.state.logScale}
-                         onChange={this.handleLogScaleChange}/>
-                  <label htmlFor="log-scale">
-                    Log scale
-                  </label>
-                </div> : <div/>
-              }
-              <div className="theme-wrapper">
-                <div className="checkbox-wrapper">
-                  <input type="checkbox" id="theme-auto" checked={this.state.theme === Theme.AUTO}
-                        onChange={this.handleThemeAutoChange}/>
-                  <label htmlFor="theme-auto">Auto</label>
-                </div>
-                <div className="checkbox-wrapper">
-                  <input type="checkbox" id="theme-dark" checked={this.state.theme === Theme.DARK}
-                        onChange={this.handleThemeDarkChange}/>
-                  <label htmlFor="theme-dark">Dark</label>
-                </div>
-                <div className="checkbox-wrapper">
-                  <input type="checkbox" id="theme-light" checked={this.state.theme === Theme.LIGHT}
-                        onChange={this.handleThemeLightChange}/>
-                  <label htmlFor="theme-light">Light</label>
-                </div>
-              </div>
+            <div className="explanation">
+              <h2>Explanation</h2>
+              <p>You are currently seeing {this.state.selectedType === GraphType.CASES ?
+                "the number of new infections per day" :
+                this.state.selectedType === GraphType.DEATHS ? "the number of new deaths per day" :
+                  "the daily relative growth of the number of new infections (in %)"}.
+              A seven day running average has been applied to all data to make the graph more meaningful.</p>
+              <p>Data source is the <a target="_blank" rel="noopener noreferrer" href="https://github.com/CSSEGISandData/COVID-19">John Hopkins University</a>.</p>
             </div>
           </main>
         </div>
