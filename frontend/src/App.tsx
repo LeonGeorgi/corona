@@ -187,13 +187,15 @@ class App extends React.Component<{}, State> {
               </div>
             </div>
             <div className="bottom-controls">
-              <div className="checkbox-wrapper">
-                <input type="checkbox" id="log-scale" checked={this.state.logScale}
-                       onChange={this.handleLogScaleChange}/>
-                <label htmlFor="log-scale">
-                  Log scale
-                </label>
-              </div>
+              {this.state.selectedType !== GraphType.GROWTH ?
+                <div className="checkbox-wrapper">
+                  <input type="checkbox" id="log-scale" checked={this.state.logScale}
+                         onChange={this.handleLogScaleChange}/>
+                  <label htmlFor="log-scale">
+                    Log scale
+                  </label>
+                </div> : <div/>
+              }
               <div className="theme-wrapper">
                 <div className="checkbox-wrapper">
                   <input type="checkbox" id="theme-auto" checked={this.state.theme === Theme.AUTO}
